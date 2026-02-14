@@ -1,0 +1,44 @@
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: mssql
+    restart: unless-stopped
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "${MSSQL_SA_PASSWORD}"
+      MSSQL_PID: "Developer"
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql_data:/var/opt/mssql
+    healthcheck:
+      test: [ "CMD", "/opt/mssql-tools/bin/sqlcmd", "-S", "localhost", "-U", "sa", "-P", "${MSSQL_SA_PASSWORD}", "-Q", "SELECT 1" ]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+
+  db-init:
+    image: mcr.microsoft.com/mssql-tools
+    depends_on:
+      - mssql
+    volumes:
+      - ./db:/scripts:ro
+    environment:
+      MSSQL_SA_PASSWORD: "${MSSQL_SA_PASSWORD}"
+    entrypoint: [ "/bin/bash", "/scripts/init.sh" ]
+    restart: "no"
+
+  api:
+    build:
+      context: .  
+      dockerfile: UnitaskGroupApi/Dockerfile
+    depends_on:
+      - mssql
+    env_file:
+      - ./UnitaskGroupApi/.env
+    ports:
+      - "5000:7000"
+    restart: unless-stopped
+
+volumes:
+  mssql_data:

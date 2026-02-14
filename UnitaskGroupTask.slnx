@@ -1,0 +1,12 @@
+<Solution>
+  <Folder Name="/Solution Items/">
+    <File Path=".env" />
+    <File Path="db/init.sh" />
+    <File Path="db/init.sql" />
+    <File Path="docker-compose.yml" />
+  </Folder>
+  <Project Path="Application/Application.csproj" />
+  <Project Path="Domain/Domain.csproj" />
+  <Project Path="Infrastructure/Infrastructure.csproj" />
+  <Project Path="UnitaskGroupApi/UnitaskGroupApi.csproj" />
+</Solution>
